@@ -293,7 +293,9 @@ def launch():
     last_name = message_launch_data.get('family_name',
                  ' '.join(message_launch_data.get('name', 'Unknown').split(' ')[1:]))
     email = message_launch_data.get('email', 'Unknown')
-    campus_id = message_launch_data.get('sub', 'Unknown')
+    campus_id = message_launch_data.get('lis_person_sourcedid', 
+             message_launch_data.get('ext_user_username',
+             message_launch_data.get('sub', 'Unknown')))
     
     # Course info
     context = message_launch_data.get('https://purl.imsglobal.org/spec/lti/claim/context', {})
