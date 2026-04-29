@@ -7,7 +7,7 @@
         "key_set_url": "https://developer.blackboard.com/api/v1/management/applications/a50a99c6-b6cb-4586-88f8-5d3b4fc87781/jwks.json",
         "key_set": null,
         "private_key_file": "private.key",
-"public_key_file": "public.key",
+        "public_key_file": "public.key",
         "deployment_ids": ["f7c67046-18ec-4a0d-9961-5fd055130e08"]
     }
 }
