@@ -3,6 +3,7 @@ import json
 import requests
 from flask import Flask, request, render_template_string, redirect, url_for, session
 from pylti1p3.contrib.flask import FlaskOIDCLogin, FlaskMessageLaunch, FlaskRequest, FlaskCacheDataStorage
+from pylti1p3.deep_link_resource import DeepLinkResource
 from pylti1p3.tool_config import ToolConfJsonFile
 from pylti1p3.lineitem import LineItem
 from cachelib import SimpleCache
@@ -204,6 +205,61 @@ def get_tool_conf():
 def get_launch_data_storage():
     return FlaskCacheDataStorage(cache)
 
+DEEP_LINK_TEMPLATE = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure Badge</title>
+''' + PAGE_STYLE + '''
+</head>
+<body>
+    <div class="card">
+        <div class="umbc-header">UMBC Microcredential — Configure Badge Link</div>
+        <h2>Set Badge for This Link</h2>
+        <p class="subtitle">This configuration is for instructors only. Students will not see this screen.</p>
+        <form method="POST" action="/deep_link_return">
+            <input type="hidden" name="jwt" value="{{ jwt }}">
+            <div class="field" style="background:white;padding:0;margin-bottom:16px">
+                <label class="field-label" style="display:block;margin-bottom:6px">Badge Name</label>
+                <input type="text" name="badge_name" placeholder="e.g. Python Programming Badge"
+                    style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:15px">
+            </div>
+            <div class="field" style="background:white;padding:0;margin-bottom:16px">
+                <label class="field-label" style="display:block;margin-bottom:6px">Badge ID</label>
+                <input type="text" name="badge_id" placeholder="e.g. 20260429python"
+                    style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:15px">
+            </div>
+            <button type="submit" class="submit-btn">Save Badge Configuration</button>
+        </form>
+    </div>
+</body>
+</html>
+'''
+
+@app.route('/deep_link_return', methods=['POST'])
+def deep_link_return():
+    jwt = request.form.get('jwt')
+    badge_name = request.form.get('badge_name', 'Unknown Badge')
+    badge_id = request.form.get('badge_id', 'unknown')
+
+    tool_conf = get_tool_conf()
+    flask_request = FlaskRequest()
+    launch_data_storage = get_launch_data_storage()
+
+    try:
+        message_launch = FlaskMessageLaunch.from_cache(jwt, flask_request, tool_conf, launch_data_storage=launch_data_storage)
+        deep_link = message_launch.get_deep_link()
+        resource = DeepLinkResource()
+        resource.set_url(f"https://umbc-badge-claim-lti-test-production.up.railway.app/launch")
+        resource.set_custom_params({'badge_name': badge_name, 'badge_id': badge_id})
+        resource.set_title(badge_name)
+        html = deep_link.output_response_form([resource])
+        return html
+    except Exception as e:
+        return render_template_string(ERROR_TEMPLATE, error=f"Deep link error: {str(e)}")
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     tool_conf = get_tool_conf()
@@ -224,6 +280,10 @@ def launch():
     try:
         message_launch = FlaskMessageLaunch(flask_request, tool_conf, launch_data_storage=launch_data_storage)
         message_launch_data = message_launch.get_launch_data()
+        # Handle deep linking launch (instructor configuration)
+        if message_launch.is_deep_link_launch():
+            jwt = message_launch.get_launch_id()
+            return render_template_string(DEEP_LINK_TEMPLATE, jwt=jwt)
     except Exception as e:
         return render_template_string(ERROR_TEMPLATE, error=f"Launch error: {str(e)}")
 
