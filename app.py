@@ -7,16 +7,8 @@ from pylti1p3.tool_config import ToolConfJsonFile
 from pylti1p3.lineitem import LineItem
 from cachelib import SimpleCache
 
-import os
-import json
-import requests
-from flask import Flask, request, render_template_string, redirect, url_for, session
-from pylti1p3.flask_adapter import FlaskOIDCLogin, FlaskMessageLaunch, FlaskRequest, FlaskCacheDataStorage
-from pylti1p3.tool_config import ToolConfJsonFile
-from pylti1p3.lineitem import LineItem
-from cachelib import SimpleCache
-
 app = Flask(__name__)
+
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-prod')
 
 GOOGLE_SHEET_URL = os.environ.get('GOOGLE_SHEET_URL', '')
