@@ -2,7 +2,7 @@ import os
 import json
 import requests
 from flask import Flask, request, render_template_string, redirect, url_for, session
-from pylti1p3.flask_adapter import FlaskOIDCLogin, FlaskMessageLaunch, FlaskRequest, FlaskCacheDataStorage
+from pylti1p3.contrib.flask import FlaskOIDCLogin, FlaskMessageLaunch, FlaskRequest, FlaskCacheDataStorage
 from pylti1p3.tool_config import ToolConfJsonFile
 from pylti1p3.lineitem import LineItem
 from cachelib import SimpleCache
