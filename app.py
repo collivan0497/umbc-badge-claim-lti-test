@@ -293,9 +293,6 @@ def launch():
     last_name = message_launch_data.get('family_name',
                  ' '.join(message_launch_data.get('name', 'Unknown').split(' ')[1:]))
     email = message_launch_data.get('email', 'Unknown')
-    campus_id = message_launch_data.get('lis_person_sourcedid', 
-             message_launch_data.get('ext_user_username',
-             message_launch_data.get('sub', 'Unknown')))
     
     # Course info
     context = message_launch_data.get('https://purl.imsglobal.org/spec/lti/claim/context', {})
@@ -306,6 +303,7 @@ def launch():
     custom = message_launch_data.get('https://purl.imsglobal.org/spec/lti/claim/custom', {})
     badge_name = custom.get('badge_name', 'Unknown Badge')
     badge_id = custom.get('badge_id', 'Unknown')
+    campus_id = custom.get('lis_person_sourcedid', message_launch_data.get('sub', 'Unknown'))
 
     return render_template_string(CONFIRMATION_TEMPLATE,
         first_name=first_name,
