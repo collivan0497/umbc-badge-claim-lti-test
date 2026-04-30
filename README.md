@@ -2,6 +2,12 @@
 
 A custom LTI 1.3 tool that enables per-badge credential issuance from a single Blackboard Ultra course shell, built by the University of Maryland, Baltimore County Division of Professional Studies.
 
+## Demo
+
+[Watch the full walkthrough on UMBC YuJa](https://umbc.video.yuja.com/V/Video?v=16008030&node=68558298&a=20728144)
+
+*Shows instructor badge configuration via Deep Linking, student claim flow, and live credential issuance in Accredible.*
+
 ## The Problem
 
 Accredible's native Blackboard integration maps **one credential group to one course shell**. For institutions with multi-badge curricula — where a single course awards different credentials based on different gradebook thresholds — this is a hard blocker.
